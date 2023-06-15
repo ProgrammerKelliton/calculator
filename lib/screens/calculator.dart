@@ -1,3 +1,4 @@
+import 'package:calculator/screens/historic.dart';
 import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
 
@@ -76,45 +77,58 @@ class _CalculatorState extends State {
     }
   }
 
-  Color getTextColor(String text) {
+  Color getTextColor(String text, BuildContext context) {
     if (text == "C") {
       return const Color.fromRGBO(172, 65, 65, 1);
     }
     if (hightlightTexts.contains(text)) {
       return const Color.fromRGBO(65, 172, 108, 1);
     } else {
-      return const Color.fromRGBO(68, 68, 68, 1);
+      return Theme.of(context).colorScheme.onBackground;
     }
   }
 
-  void navigateToCalculationsHistory() {}
+  void navigateToCalculationsHistory() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const Historic(),
+      ),
+    );
+  }
 
-  Widget chooceMode() {
+  Widget chooceMode(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(24),
       width: 120,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.secondary,
         borderRadius: BorderRadius.circular(32),
       ),
-      child: const Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          ImageIcon(
-            AssetImage("assets/icons/moon-selected.png"),
-            color: Color.fromRGBO(68, 68, 68, 1),
+          IconButton(
+            constraints: const BoxConstraints(),
+            padding: EdgeInsets.zero,
+            icon: Image.asset("assets/icons/moon-selected.png"),
+            color: Theme.of(context).colorScheme.onBackground,
+            onPressed: () => {}, // ! Mude o tema
           ),
-          ImageIcon(
-            AssetImage("assets/icons/sun.png"),
-            color: Color.fromRGBO(68, 68, 68, 1),
+          IconButton(
+            constraints: const BoxConstraints(),
+            padding: EdgeInsets.zero,
+            icon: Image.asset("assets/icons/sun.png"),
+            color: Theme.of(context).colorScheme.onBackground,
+            onPressed: () => {}, // ! Mude o tema
           )
         ],
       ),
     );
   }
 
-  Widget history() {
+  Widget history(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24),
       child: Row(
@@ -122,9 +136,9 @@ class _CalculatorState extends State {
         children: [
           IconButton(
             onPressed: navigateToCalculationsHistory,
-            icon: const Icon(
+            icon: Icon(
               Icons.history,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.secondary,
             ),
           ),
         ],
@@ -132,7 +146,7 @@ class _CalculatorState extends State {
     );
   }
 
-  Widget viewResult() {
+  Widget viewResult(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       alignment: Alignment.centerRight,
@@ -142,15 +156,15 @@ class _CalculatorState extends State {
         children: [
           Text(
             _calculationStructure,
-            style: const TextStyle(
-              color: Color.fromRGBO(152, 152, 152, 1),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.secondary,
               fontSize: 24,
             ),
           ),
           Text(
             _result,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.secondary,
               fontSize: 32,
             ),
           ),
@@ -159,11 +173,11 @@ class _CalculatorState extends State {
     );
   }
 
-  Widget buttons() {
+  Widget buttons(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.secondary,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(32),
           topRight: Radius.circular(32),
         ),
@@ -173,17 +187,17 @@ class _CalculatorState extends State {
         padding: const EdgeInsets.all(16),
         gridDelegate:
             const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
-        itemBuilder: (context, index) => button(textsButtons[index]),
+        itemBuilder: (context, index) => button(textsButtons[index], context),
       ),
     );
   }
 
-  Widget button(String text) {
+  Widget button(String text, BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(8),
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: Theme.of(context).colorScheme.secondary,
         borderRadius: BorderRadius.circular(16),
       ),
       child: TextButton(
@@ -203,7 +217,7 @@ class _CalculatorState extends State {
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 24,
-            color: getTextColor(text),
+            color: getTextColor(text, context),
           ),
         ),
         onPressed: () => changeCalculationStructure(text),
@@ -217,18 +231,19 @@ class _CalculatorState extends State {
 
     return SafeArea(
       child: Scaffold(
-        backgroundColor: const Color.fromRGBO(68, 68, 68, 1),
+        backgroundColor: Theme.of(context).colorScheme.background,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           toolbarHeight: 100,
+          shadowColor: Colors.transparent,
           leadingWidth: screen.width,
-          actions: [chooceMode()],
-          leading: history(),
+          actions: [chooceMode(context)],
+          leading: history(context),
         ),
         body: Column(
           children: [
-            Flexible(child: viewResult()),
-            Flexible(flex: 3, child: buttons())
+            Flexible(child: viewResult(context)),
+            Flexible(flex: 3, child: buttons(context))
           ],
         ),
       ),
