@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 class Calculator extends StatefulWidget {
   const Calculator({super.key});
@@ -8,15 +9,82 @@ class Calculator extends StatefulWidget {
 }
 
 class _CalculatorState extends State {
-  String _result = "0";
-  String _calculationStructure = "0";
+  String _result = "";
+  String _calculationStructure = "";
+
+  final List<String> textsButtons = [
+    "C",
+    "(",
+    ")",
+    "/",
+    "7",
+    "8",
+    "9",
+    "*",
+    "4",
+    "5",
+    "6",
+    "-",
+    "1",
+    "2",
+    "3",
+    "+",
+    "+/-",
+    "0",
+    ".",
+    "=",
+  ];
+
+  final List<String> hightlightTexts = [
+    "+",
+    "-",
+    "/",
+    "=",
+    "*",
+  ];
 
   void changeResult(String value) {
     setState(() => _result = value);
   }
 
-  void changeCalculationStructure(String value) {
-    setState(() => _calculationStructure = value);
+  void changeCalculationStructure(String operationOrValue) {
+    if (operationOrValue != "C") {
+      setState(() => _calculationStructure += operationOrValue);
+    } else if (operationOrValue == "C") {
+      setState(() => _calculationStructure = "");
+      changeResult("");
+    }
+
+    if (operationOrValue == "=") {
+      changeResult(calculator(_calculationStructure.replaceFirst("=", "")));
+    }
+  }
+
+  String calculator(String inputString) {
+    try {
+      var exp = Parser().parse(inputString);
+      var result = exp.evaluate(EvaluationType.REAL, ContextModel());
+      var resultInString = result.toString();
+
+      resultInString = resultInString.endsWith(".0")
+          ? resultInString.replaceAll(".0", "")
+          : resultInString;
+
+      return resultInString;
+    } catch (e) {
+      return "Error";
+    }
+  }
+
+  Color getTextColor(String text) {
+    if (text == "C") {
+      return const Color.fromRGBO(172, 65, 65, 1);
+    }
+    if (hightlightTexts.contains(text)) {
+      return const Color.fromRGBO(65, 172, 108, 1);
+    } else {
+      return const Color.fromRGBO(68, 68, 68, 1);
+    }
   }
 
   void navigateToCalculationsHistory() {}
@@ -70,6 +138,7 @@ class _CalculatorState extends State {
       alignment: Alignment.centerRight,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
             _calculationStructure,
@@ -99,6 +168,46 @@ class _CalculatorState extends State {
           topRight: Radius.circular(32),
         ),
       ),
+      child: GridView.builder(
+        itemCount: 20,
+        padding: const EdgeInsets.all(16),
+        gridDelegate:
+            const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
+        itemBuilder: (context, index) => button(textsButtons[index]),
+      ),
+    );
+  }
+
+  Widget button(String text) {
+    return Container(
+      margin: const EdgeInsets.all(8),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: TextButton(
+        style: ButtonStyle(
+          minimumSize: const MaterialStatePropertyAll<Size>(Size.infinite),
+          shape: MaterialStatePropertyAll(
+            BeveledRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          overlayColor: const MaterialStatePropertyAll<Color>(
+            Colors.grey,
+          ),
+        ),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 24,
+            color: getTextColor(text),
+          ),
+        ),
+        onPressed: () => changeCalculationStructure(text),
+      ),
     );
   }
 
@@ -119,7 +228,7 @@ class _CalculatorState extends State {
         body: Column(
           children: [
             Flexible(child: viewResult()),
-            Flexible(flex: 2, child: buttons())
+            Flexible(flex: 3, child: buttons())
           ],
         ),
       ),
