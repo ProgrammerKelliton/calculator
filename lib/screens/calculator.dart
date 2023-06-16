@@ -1,7 +1,7 @@
 import 'package:calculator/components/buttons.dart';
-import 'package:calculator/components/chooce_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Calculator extends StatefulWidget {
   const Calculator({super.key});
@@ -13,6 +13,7 @@ class Calculator extends StatefulWidget {
 class _CalculatorState extends State {
   String _result = "";
   String _calculationStructure = "";
+  Future<SharedPreferences> prefs = SharedPreferences.getInstance();
 
   void changeResult(String value) {
     setState(() => _result = value);
@@ -86,7 +87,6 @@ class _CalculatorState extends State {
           toolbarHeight: 100,
           shadowColor: Colors.transparent,
           leadingWidth: screen.width,
-          actions: const [ChooseMode()],
         ),
         body: Column(
           children: [
